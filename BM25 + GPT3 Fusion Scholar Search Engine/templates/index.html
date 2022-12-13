@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <title>Fusion Scholar</title>
+    <!-- <link rel="stylesheet" type="text/css" href="./style.css"> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+      img {
+        width: 40%;
+        height: 20%;
+        margin-left:30%;
+      }
+      </style>
+  </head>
+  <body>
+    <!-- <div><img src="logo.jpg"></div> -->
+    <img src="{{url_for('static', filename='logo.png')}}" align: "middle"/>
+    <input class="search-box" id="searchbar" style="margin-left:25%;padding:15px;border-radius: 10px;width:50%;">
+    <ul class="results"></ul>
+    <script>
+      $(document).ready(function() {
+        let debounce;
+        $('.search-box').on('keydown', function (e) { 
+          clearTimeout(debounce)
+          debounce = setTimeout(() => {
+                  search();  
+          }, 300);
+        })
+      })
+
+      function search() {
+              const query = $('.search-box').val();
+              fetch(`http://localhost:5000/search?q=${encodeURIComponent(query.trim())}`)
+                .then((resp) => resp.json())
+                .then((data) => {
+                  console.log(data)
+                        $('.results').empty();
+                        for (let i = 0; i < data.length; i++) {
+                                temp = data[i]["title"].substring(2,data[i]["title"].length - 2) + "<br><br>"
+                                temp += "Abstract: " + data[i]["paperAbstract"].substring(2,data[i]["paperAbstract"].length - 2) + "<br><br>"
+                                temp += "Venue: " + data[i]["venue"].substring(2,data[i]["venue"].length - 2) + "<br><br>"
+                                temp += "NumCitedBy: " + data[i]["numCitedBy"].substring(1,data[i]["numCitedBy"].length - 1) + "<br><br>"
+                                $('.results').append(`<li>${temp}</li>`)
+                        }
+                      })
+      }
+    </script>
+  </body>
+</html>
